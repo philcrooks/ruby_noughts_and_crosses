@@ -1,10 +1,11 @@
 class Board
   PADDING = "   |   |   \n"
   BOARD_SIZE = 3
-  PIECES = ["X", "O"]
 
-  def initialize()
+  def initialize(player_pieces = nil)
     @board = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
+    @player_pieces = ["X", "O"]
+    @player_pieces = player_pieces if player_pieces
     @move_count = 0
   end
 
@@ -23,25 +24,30 @@ class Board
     return s
   end
 
-  def to_ary
-    return @board
-  end
-
   def get_player_piece()
-    return PIECES[@move_count % 2]
+    return @player_pieces[@move_count % 2]
   end
 
-  def make_move(position, player_piece = nil)
-    row = (position - 1) / BOARD_SIZE
-    col = (position - 1) % BOARD_SIZE
+  def occupied? (cell)
+    return @player_pieces.find(cell)
+  end
+
+  def position_to_row_and_column(position)
+    return (position - 1) / BOARD_SIZE, (position - 1) % BOARD_SIZE
+  end
+
+  def position_piece(position, player_piece = nil)
+    row, col = position_to_row_and_column(position)
     player_piece = get_player_piece() if !player_piece
-    @board[row][col] = player_piece
-    @move_count += 1
+    if !occupied? (@board[row][col])
+      @board[row][col] = player_piece
+      @move_count += 1
+    end
   end
 
   def get_row(row_no)
     row_no = ((row_no ) % BOARD_SIZE)
-    return @board[row_no]
+    return @board[row_no].join
   end
 
   def get_column(col_no)
@@ -50,7 +56,7 @@ class Board
     for row in @board
       r.push row[col_no]
     end
-    return r
+    return r.join
   end
 
   def get_diagonal(diag_no)
@@ -64,19 +70,7 @@ class Board
     for c in cells
       r.push @board[c[:row]][c[:col]]
     end
-    return r
-  end
-
-  def get_row_as_string(row_no)
-    return get_row(row_no).join
-  end
-
-  def get_column_as_string(col_no)
-    return get_column(col_no).join
-  end
-
-  def get_diagonal_as_string(diag_no)
-    return get_diagonal(diag_no).join
+    return r.join
   end
 
   def winner?(player_piece)
@@ -84,10 +78,10 @@ class Board
     c = 0
     result = false
     while c < BOARD_SIZE
-      result ||= ((get_row_as_string(c) == s) || (get_column_as_string(c) == s))
+      result ||= ((get_row(c) == s) || (get_column(c) == s))
       c += 1
     end
-    result ||= ((get_diagonal_as_string(0) == s) || (get_diagonal_as_string(1) == s))
+    result ||= ((get_diagonal(0) == s) || (get_diagonal(1) == s))
     return result
   end
 end
