@@ -1,12 +1,11 @@
 require_relative './game'
 
-class Play
+class GameRunner
   PLAYER_PIECES = ["X", "O"]
 
   def initialize (computer_player_no = 1)
     @board = Board.new()
     @computer_player_no = computer_player_no
-    @debug = false
   end
 
   def game_over?()
@@ -57,40 +56,29 @@ class Play
     # The game is not over so there must be some free cells to look at
     moves = []
     for free_cell in free_cells
-      if @debug
-        puts "At recursion depth #{depth}. Number of free cells = #{free_cells.count}"
-        puts "'#{PLAYER_PIECES[player_no]}' is playing in position #{free_cell}"
-      end
       board.position_piece(free_cell, PLAYER_PIECES[player_no])
       # Have made an arbitrary move - find out the implications
-      puts board.debug_to_s if @debug
       moves << { move: free_cell, score: compute_move(board.clone, depth + 1, get_enemy(player_no)) }
       # Undo the move
       board.position_piece(free_cell, free_cell.to_s)
     end
-    if @debug
-      puts "Returning from recursion depth #{depth}"
-      puts "Found these moves:\n#{moves}"
-      puts
-    end
+
     if player_no == @computer_player_no
       move = max_move(moves)
-      if @debug
-        puts "The computer played in position #{move[:move]}. Returning result #{move[:score]}"
-      end
       return move[:move] if depth == 1
       return move[:score]
     end
     move = min_move(moves)
-    if @debug
-      puts "The human played in position #{move[:move]}. Returning result #{move[:score]}"
-    end
     return move[:score]
   end
 
   def take_turns
     move_count = 0
-    puts @board.to_s
+    if @computer_player_no == 0
+      puts "Computer to play first..."
+    else
+      puts @board.to_s
+    end
     while !game_over?
       player_no = move_count % PLAYER_PIECES.count
       if player_no == @computer_player_no
@@ -104,8 +92,25 @@ class Play
       end
       move_count += 1
     end
+    if @board.winner?(PLAYER_PIECES[@computer_player_no])
+      puts("The computer is victorious!!!")
+    elsif @board.winner?(PLAYER_PIECES[get_enemy(@computer_player_no)])
+      puts("I didn't think I would ever say this but you win.")
+    else
+      puts("Cat's game. Are you bored yet?")
+    end
   end
 end
 
-game = Play.new
-game.take_turns
+play = true
+computer_player_no = 1
+while play
+  game = GameRunner.new(computer_player_no)
+  game.take_turns
+  print "Do you want to play again (y/n)? "
+  play = (gets.chomp.downcase == "y")
+  if play
+    computer_player_no = (computer_player_no + 1) % GameRunner::PLAYER_PIECES.count
+    puts "Here we go again..."
+  end
+end
