@@ -17,7 +17,7 @@ class GameRunner
   end
 
   def next_player_no(current_player_no)
-    return (current_player_no + 1) % GameRunner::PLAYER_PIECES.count
+    return (current_player_no + 1) % PLAYER_PIECES.count
   end
   
   alias_method :get_enemy, :next_player_no
