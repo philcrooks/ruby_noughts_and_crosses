@@ -90,7 +90,12 @@ class GameRunner
         puts "The computer played in cell #{move}"
       else
         print "Where would you like to play? "
-        @board.position_piece( gets.chomp.to_i, PLAYER_PIECES[player_no])
+        move = gets.chomp.to_i
+        while !@board.free_cells.include?(move)
+          print "That is not the number of a free cell, please try again: "
+          move = gets.chomp.to_i
+        end
+        @board.position_piece(move , PLAYER_PIECES[player_no])
       end
       move_count += 1
     end

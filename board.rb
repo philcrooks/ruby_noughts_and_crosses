@@ -1,18 +1,23 @@
+require ('colorize')
+
 class Board
   PADDING = "   |   |   \n"
   BOARD_SIZE = 3
 
   def initialize()
     @board = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
+    @last_position = nil
   end
 
   def to_s
-    c = 0
+    c = p = 0
     s = ""
     for row in @board
       s += PADDING
       for cell in row
-        s += " #{cell} |"
+        p += 1
+        color = (p == @last_position ? :red : :cyan)
+        s += (occupied?(cell) ? " #{cell.colorize(color)} |" : " #{cell.colorize(:yellow)} |")
       end
       s[-1] = "\n" + PADDING
       s += ("-" * 11) + "\n" if c < BOARD_SIZE - 1
@@ -22,6 +27,7 @@ class Board
   end
 
   def position_piece(position, player_piece)
+    @last_position = position
     row, col = position_to_row_and_column(position)
     @board[row][col] = player_piece
   end
