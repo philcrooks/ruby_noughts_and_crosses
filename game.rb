@@ -22,9 +22,11 @@ class Board
   end
 
   def debug_to_s
+    s = ""
     for row in @board
-      puts row.join
+      s += row.join + "\n"
     end
+    return s
   end
 
   def position_piece(position, player_piece)

@@ -6,7 +6,7 @@ class Play
   def initialize (computer_player_no = 1)
     @board = Board.new()
     @computer_player_no = computer_player_no
-    @debug = true
+    @debug = false
   end
 
   def game_over?()
@@ -24,21 +24,23 @@ class Play
   def max_move (moves)
     i = mark = 0
     count = moves.count
+    m = moves.shuffle
     while i < count
-      mark = i if moves[i][:score] > moves[mark][:score]
+      mark = i if m[i][:score] > m[mark][:score]
       i += 1
     end
-    return moves[i]
+    return m[mark]
   end
 
   def min_move (moves)
     i = mark = 0
     count = moves.count
+    m = moves.shuffle
     while i < count
-      mark = i if moves[i][:score] < moves[mark][:score]
+      mark = i if m[i][:score] < m[mark][:score]
       i += 1
     end
-    return moves[i]
+    return m[mark]
   end
 
   def compute_move(board, depth, player_no)
@@ -56,9 +58,8 @@ class Play
     moves = []
     for free_cell in free_cells
       if @debug
-        puts "At recursion depth #{depth}"
-        puts "Number of free cells = #{free_cells.count}"
-        puts "Playing in position #{free_cell}"
+        puts "At recursion depth #{depth}. Number of free cells = #{free_cells.count}"
+        puts "'#{PLAYER_PIECES[player_no]}' is playing in position #{free_cell}"
       end
       board.position_piece(free_cell, PLAYER_PIECES[player_no])
       # Have made an arbitrary move - find out the implications
@@ -74,20 +75,29 @@ class Play
     end
     if player_no == @computer_player_no
       move = max_move(moves)
-      return move[:move] if depth == 0
+      if @debug
+        puts "The computer played in position #{move[:move]}. Returning result #{move[:score]}"
+      end
+      return move[:move] if depth == 1
       return move[:score]
     end
     move = min_move(moves)
+    if @debug
+      puts "The human played in position #{move[:move]}. Returning result #{move[:score]}"
+    end
     return move[:score]
   end
 
   def take_turns
     move_count = 0
+    puts @board.to_s
     while !game_over?
-      puts @board.to_s
       player_no = move_count % PLAYER_PIECES.count
       if player_no == @computer_player_no
-        @board.position_piece(compute_move(@board.clone, 0, player_no), PLAYER_PIECES[player_no])
+        move = compute_move(@board.clone, 1, player_no)
+        @board.position_piece(move, PLAYER_PIECES[player_no])
+        puts @board.to_s
+        puts "The computer played in cell #{move}"
       else
         print "Where would you like to play? "
         @board.position_piece( gets.chomp.to_i, PLAYER_PIECES[player_no])
