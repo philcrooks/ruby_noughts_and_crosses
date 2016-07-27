@@ -91,5 +91,4 @@ class Board
     end
     return r.join
   end
-
 end
