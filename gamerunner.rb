@@ -1,6 +1,8 @@
-require_relative './game'
+require_relative './board'
 
 class GameRunner
+
+# This class handles the game logic and the code to 
   PLAYER_PIECES = ["X", "O"]
 
   def initialize (computer_player_no = 1)
@@ -72,7 +74,7 @@ class GameRunner
     return move[:score]
   end
 
-  def take_turns
+  def play_one_game
     move_count = 0
     if @computer_player_no == 0
       puts "Computer to play first..."
@@ -102,14 +104,14 @@ class GameRunner
   end
 end
 
-play = true
+want_to_play = true
 computer_player_no = 1
-while play
+while want_to_play
   game = GameRunner.new(computer_player_no)
-  game.take_turns
+  game.play_one_game
   print "Do you want to play again (y/n)? "
-  play = (gets.chomp.downcase == "y")
-  if play
+  want_to_play = (gets.chomp.downcase == "y")
+  if want_to_play
     computer_player_no = (computer_player_no + 1) % GameRunner::PLAYER_PIECES.count
     puts "Here we go again..."
   end

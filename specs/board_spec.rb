@@ -1,6 +1,6 @@
 require('minitest/autorun')
 require('minitest/rg')
-require_relative('../game.rb')
+require_relative('../board.rb')
 
 class TestBoard < MiniTest::Test
   def test_get_row
@@ -52,13 +52,6 @@ class TestBoard < MiniTest::Test
     board.position_piece(5, "X")
     assert_equal(true, board.winner?("X"))
   end
-
-  # def test_retrieval
-  #   board = Board.new()
-  #   board.position_piece(9, "X")
-  #   assert_equal("X", board.retrieve_piece(9))
-  #   assert_equal(nil, board.retrieve_piece(8))
-  # end
 
   def test_free_cells
     board = Board.new()

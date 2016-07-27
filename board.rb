@@ -21,24 +21,10 @@ class Board
     return s
   end
 
-  def debug_to_s
-    s = ""
-    for row in @board
-      s += row.join + "\n"
-    end
-    return s
-  end
-
   def position_piece(position, player_piece)
     row, col = position_to_row_and_column(position)
     @board[row][col] = player_piece
   end
-
-  # def retrieve_piece(position)
-  #   row, col = position_to_row_and_column(position)
-  #   return @board[row][col] if occupied?(@board[row][col])
-  #   return nil
-  # end
 
   def winner?(player_piece)
     s = player_piece * BOARD_SIZE
