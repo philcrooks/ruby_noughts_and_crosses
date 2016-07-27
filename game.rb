@@ -2,11 +2,8 @@ class Board
   PADDING = "   |   |   \n"
   BOARD_SIZE = 3
 
-  def initialize(player_pieces = nil)
+  def initialize()
     @board = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
-    @player_pieces = ["X", "O"]
-    @player_pieces = player_pieces if player_pieces
-    @move_count = 0
   end
 
   def to_s
@@ -24,25 +21,53 @@ class Board
     return s
   end
 
-  def get_player_piece()
-    return @player_pieces[@move_count % 2]
+  def debug_to_s
+    for row in @board
+      puts row.join
+    end
   end
 
+  def position_piece(position, player_piece)
+    row, col = position_to_row_and_column(position)
+    @board[row][col] = player_piece
+  end
+
+  # def retrieve_piece(position)
+  #   row, col = position_to_row_and_column(position)
+  #   return @board[row][col] if occupied?(@board[row][col])
+  #   return nil
+  # end
+
+  def winner?(player_piece)
+    s = player_piece * BOARD_SIZE
+    c = 0
+    result = false
+    while c < BOARD_SIZE
+      result = result || ((get_row(c) == s) || (get_column(c) == s))
+      c += 1
+    end
+    result = result || ((get_diagonal(0) == s) || (get_diagonal(1) == s))
+    return result
+  end
+
+  def free_cells
+    cells = []
+    for row in @board
+      for cell in row
+        cells << cell.to_i if !occupied?(cell)
+      end
+    end
+    return cells
+  end
+
+  # private
+
   def occupied? (cell)
-    return @player_pieces.find(cell)
+    return !(("1".."9").member?(cell))
   end
 
   def position_to_row_and_column(position)
     return (position - 1) / BOARD_SIZE, (position - 1) % BOARD_SIZE
-  end
-
-  def position_piece(position, player_piece = nil)
-    row, col = position_to_row_and_column(position)
-    player_piece = get_player_piece() if !player_piece
-    if !occupied? (@board[row][col])
-      @board[row][col] = player_piece
-      @move_count += 1
-    end
   end
 
   def get_row(row_no)
@@ -73,15 +98,4 @@ class Board
     return r.join
   end
 
-  def winner?(player_piece)
-    s = player_piece * BOARD_SIZE
-    c = 0
-    result = false
-    while c < BOARD_SIZE
-      result ||= ((get_row(c) == s) || (get_column(c) == s))
-      c += 1
-    end
-    result ||= ((get_diagonal(0) == s) || (get_diagonal(1) == s))
-    return result
-  end
 end
