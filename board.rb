@@ -1,6 +1,10 @@
 require ('colorize')
 
 class Board
+
+  # This class manages the game board.
+  # It prints the board, records player moves, returns an array of free cells and calculates whether the game has been won.
+  
   PADDING = "   |   |   \n"
   BOARD_SIZE = 3
 
