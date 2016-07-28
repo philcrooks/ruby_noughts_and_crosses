@@ -68,6 +68,7 @@ class MoveMaker
       puts debug if @show_debug
       return score
     end
+    
     # The game is not over so there must be some free cells to look at
     moves = []
     for free_cell in free_cells
