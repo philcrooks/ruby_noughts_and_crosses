@@ -30,26 +30,15 @@ class MoveMaker
     return result || (board.free_cells.count == 0)
   end
 
-  def max_move (moves)
+  def find_move (moves)
     i = mark = 0
     count = moves.count
-    m = moves.shuffle
+    mv = moves.shuffle
     while i < count
-      mark = i if m[i][:score] > m[mark][:score]
+      mark = i if yield(mv, i, mark)
       i += 1
     end
-    return m[mark]
-  end
-
-  def min_move (moves)
-    i = mark = 0
-    count = moves.count
-    m = moves.shuffle
-    while i < count
-      mark = i if m[i][:score] < m[mark][:score]
-      i += 1
-    end
-    return m[mark]
+    return mv[mark]
   end
 
   def find_best_move(board, depth, player_no, debug)
@@ -80,11 +69,11 @@ class MoveMaker
     end
 
     if player_no == @computer_player_no
-      move = max_move(moves)
+      move = find_move(moves) { | mv, i, mark | mv[i][:score] > mv[mark][:score] }
       return move[:move] if depth == 1
       return move[:score]
     end
-    move = min_move(moves)
+    move = find_move(moves) { | mv, i, mark | mv[i][:score] < mv[mark][:score] }
     return move[:score]
   end
 
